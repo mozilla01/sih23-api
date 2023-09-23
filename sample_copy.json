@@ -1,0 +1,58 @@
+{
+
+  "rakes" : [
+  {
+    "id": 1,
+    "status": "free",
+    "source": null,
+    "destination": null,
+    "location": [19.769805,73.730762],
+    "distance": 0
+  },
+  {
+    "id": 2,
+    "status": "free",
+    "source": null,
+    "destination": null,
+    "location": [19.169037,73.115126],
+    "distance": 0
+  },
+  {
+    "id": 3,
+    "status": "free",
+    "source": null,
+    "destination": null,
+    "location": [22.342963,75.399851],
+    "distance": 0
+  }
+],
+  "sources" : [
+  {"id": 1, "stock": 30, "consumer": 1, "location": [19.201333, 72.980793], "allocated": false},
+  {"id": 2, "stock": 11, "consumer": 2, "location": [22.680930,75.936453], "allocated": false},
+  {"id": 3, "stock": 15, "consumer": 3, "location": [16.831884,74.617003], "allocated": false},
+  {"id": 4, "stock": 13, "consumer": 4, "location": [19.213653,77.343391], "allocated": false}
+],
+  "consumers" : [
+  {
+    "id": 1,
+    "stock": 5,
+    "location": [18.485861,73.831224]
+  },
+  {
+    "id": 2,
+    "stock": 5,
+    "location": [20.762278,75.304353]
+  },
+  {
+    "id": 3,
+    "stock": 5,
+    "location": [14.611226,74.820639]
+  },
+  {
+    "id": 4,
+    "stock": 5,
+    "location": [17.377901,78.558429]
+  }
+],
+  "rake_capacity": 10
+}

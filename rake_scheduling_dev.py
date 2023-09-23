@@ -1,7 +1,36 @@
 import time
+import json
+import math
 from colorama import Fore, Style
 import geopy.distance
 
+
+earth_radius = 6371.0
+
+
+# Gets the next location
+def interpolate_coordinates(lat1, lon1, lat2, lon2, distance_km):
+    # Convert latitude and longitude from degrees to radians
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+
+    # Calculate the angular distance between the two points
+    angular_distance = 2 * math.asin(math.sqrt(
+        math.sin((lat2 - lat1) / 2) ** 2 +
+        math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2
+    ))
+
+    if angular_distance == 0:
+        # Points are nearly identical; return one of the points
+        return lat1, lon1
+
+    # Calculate the fractional distance to the interpolated point
+    fraction = distance_km / (earth_radius * angular_distance)
+
+    # Calculate the coordinates of the interpolated point
+    interpolated_lat = math.degrees(lat1 + fraction * (lat2 - lat1))
+    interpolated_lon = math.degrees(lon1 + fraction * (lon2 - lon1))
+
+    return [interpolated_lat, interpolated_lon]
 
 def reducer(rakes):
     for r in rakes:
@@ -14,7 +43,14 @@ def reducer(rakes):
             r["destination"] = None
 
         if r["distance"] > 0:
-            r["distance"] -= 1
+            r["distance"] -= 10
+            r["location"] = interpolate_coordinates(
+                r["location"][0],
+                r["location"][1],
+                consumers[r["destination"] - 1]["location"][0],
+            consumers[r["destination"] - 1]["location"][1],
+                10,
+            )
             print("Distance left for rake {}: {}".format(r["id"], r["distance"]))
 
 
@@ -27,64 +63,16 @@ def remover(arr, id):
 def distance(x1, y1, x2, y2):
     return geopy.distance.geodesic([x1, y1], [x2, y2]).km
 
-rakes = [
-    {
-        "id": 1,
-        "status": "free",
-        "source": None,
-        "destination": None,
-        "location": [19.769805,73.730762], # Nashik
-        "distance": 0,
-    },
-    {
-        "id": 2,
-        "status": "free",
-        "source": None,
-        "destination": None,
-        "location": [19.169037,73.115126], # Kalyan
-        "distance": 0,
-    },
-    {
-        "id": 3,
-        "status": "free",
-        "source": None,
-        "destination": None,
-        "location": [22.342963,75.399851], # Pithampur 
-        "distance": 0,
-    },
-]
+global data
+with open('sample.json', 'r') as rfile:
+    data = json.load(rfile)
 
-rake_capacity = 10
+rakes = data["rakes"]
 
-sources = [
-    {"id": 1, "stock": 30, "consumer": 1, "location": [19.201333, 72.980793], "allocated": False}, # Mumbai
-    {"id": 2, "stock": 11, "consumer": 2, "location": [22.680930,75.936453], "allocated": False}, # Indore
-    {"id": 3, "stock": 15, "consumer": 3, "location": [16.831884,74.617003], "allocated": False}, # Sangli
-    {"id": 4, "stock": 13, "consumer": 4, "location": [19.213653,77.343391], "allocated": False}, # Nanded
-]
+rake_capacity = data["rake_capacity"]
 
-consumers = [
-    {
-        "id": 1,
-        "stock": 5,
-        "location": [18.485861,73.831224], # Pune
-    },
-    {
-        "id": 2,
-        "stock": 5,
-        "location": [20.762278,75.304353], # Jalgaon
-    },
-    {
-        "id": 3,
-        "stock": 5,
-        "location": [14.611226,74.820639], # Sirsi
-    },
-    {
-        "id": 4,
-        "stock": 5,
-        "location": [17.377901,78.558429], # Hyderabad
-    },
-]
+sources = data["sources"]
+consumers = data["consumers"]
 
 
 def check_stock(arr, capacity):
@@ -144,6 +132,14 @@ def min_distance(shortlisted_sources, shortlisted_rakes):
             "distance": minDist,
         }
         change(rakes, sources, values)
+        new_data = {
+            "rakes": rakes,
+            "sources": sources,
+            "consumers": consumers,
+            "rake_capacity": rake_capacity,
+        }
+        with open('sample.json', 'w') as wfile:
+            json.dump(new_data, wfile)
         remover(shortlisted_rakes, rake_id)
         remover(shortlisted_sources, source_id)
         print(
@@ -177,6 +173,14 @@ while True:
     # for r in rakes:
     #     print(r["distance"])
     reducer(rakes)
+    new_data = {
+        "rakes": rakes,
+        "sources": sources,
+        "consumers": consumers,
+        "rake_capacity": rake_capacity,
+    }
+    with open('sample.json', 'w') as wfile:
+        json.dump(new_data, wfile)
     time.sleep(1)
     # for s in sources:
     #     if s["stock"] < 20:
