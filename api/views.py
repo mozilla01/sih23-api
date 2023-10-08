@@ -79,7 +79,7 @@ class UserLogin(APIView):
 
 
 class GetRakes(APIView):
-    permissions_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         rakes = Rake.objects.all()
@@ -88,7 +88,7 @@ class GetRakes(APIView):
 
 
 class GetConsumers(APIView):
-    permissions_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         consumers = ConsumerAccount.objects.all()
@@ -97,7 +97,7 @@ class GetConsumers(APIView):
 
 
 class GetSources(APIView):
-    permissions_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         sources = CompanyAccount.objects.all()
