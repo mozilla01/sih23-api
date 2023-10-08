@@ -32,6 +32,12 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+- Run the allocation algorithm
+
+```
+python manage.py allocate
+```
+
 # Managing the database
 
 We are using SQLite3 to store data. All data can be viewed from a web interface by visiting the `/admin` route. But first we need to create a superuser.
