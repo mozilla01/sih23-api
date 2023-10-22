@@ -44,7 +44,9 @@ def reducer():
         rake = Rake.objects.get(id=r.id)
         print("Rake source id is {}".format(r.source))
         source = CompanyAccount.objects.get(id=r.source)
+        source_loc = [source.location.split(",")[0], source.location.split(",")[1]]
         consumer = ConsumerAccount.objects.get(id=r.destination)
+        consumer_loc = [consumer.location.split(",")[0], consumer.location.split(",")[1]]
         if r.distance <= 0:
             print("Rake {} has reached destination".format(r.id))
             # Fetch source and set it to unallocated
@@ -63,13 +65,22 @@ def reducer():
         if r.distance > 0:
             rake.distance -= 10
             print("Rake location is {}".format(rake.location))
-            rake.location = interpolate_coordinates(
-                float(r.location.split(",")[0]),
-                float(r.location.split(",")[1]),
-                float(consumer.location.split(",")[0]),
-                float(consumer.location.split(",")[1]),
-                10,
-            )
+            if r.distance < distance(source_loc[0], source_loc[1], consumer_loc[0], consumer_loc[1]):
+                rake.location = interpolate_coordinates(
+                    float(r.location.split(",")[0]),
+                    float(r.location.split(",")[1]),
+                    float(consumer.location.split(",")[0]),
+                    float(consumer.location.split(",")[1]),
+                    10,
+                )
+            else:
+                rake.location = interpolate_coordinates(
+                    float(r.location.split(",")[0]),
+                    float(r.location.split(",")[1]),
+                    float(source.location.split(",")[0]),
+                    float(source.location.split(",")[1]),
+                    10,
+                )
             print("Distance left for rake {}: {}".format(r.id, r.distance))
             print("Rake is travelling, location: {}".format(rake.location))
             rake.save()
