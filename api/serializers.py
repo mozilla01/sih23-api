@@ -10,6 +10,7 @@ User = get_user_model()
 class ConsumerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConsumerAccount
+
         fields = "__all__"
 
 
@@ -25,18 +26,19 @@ class UserRegisterationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, clean_data):
-            user = User.objects.create_user(
-                password=clean_data["password"],
-                email=clean_data["email"],
-                type=clean_data["type"],
-            )
-            user.save()
-            return user
+        user = User.objects.create_user(
+            password=clean_data["password"],
+            email=clean_data["email"],
+            type=clean_data["type"],
+        )
+        user.save()
+        return user
 
 
 class RailwayAccountRegisterationSerializer(serializers.ModelSerializer):
     aadhaar = serializers.FileField(required=False)
     id_proof = serializers.FileField(required=False)
+
     class Meta:
         model = RailwayAccount
         fields = "__all__"
@@ -45,6 +47,7 @@ class RailwayAccountRegisterationSerializer(serializers.ModelSerializer):
 class CompanyAccountRegisterationSerializer(serializers.ModelSerializer):
     aadhaar = serializers.FileField(required=False)
     corporation_proof = serializers.FileField(required=False)
+
     class Meta:
         model = CompanyAccount
         fields = "__all__"

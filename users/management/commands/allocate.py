@@ -189,6 +189,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         while True:
+            print("---------------------------------")
             rakes = Rake.objects.all()
             sources = CompanyAccount.objects.all()
             free_sources = check_stock(sources, rake_capacity)
